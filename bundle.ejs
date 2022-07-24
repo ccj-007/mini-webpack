@@ -1,0 +1,29 @@
+(function (modules) {
+function require (id) {
+const [fn, mapping] = modules[id]
+const module = {
+exports: {}
+}
+
+//根据map映射找到对应的id
+function localRequire (filePath) {
+const id = mapping[filePath]
+return require(id)
+}
+//找到映射后执行, 为了在子函数中也能处理依赖将cjs导入
+fn(localRequire, module, module.exports)
+
+return module.exports
+}
+
+require(0)
+})({
+
+<% data.forEach((info)=> { %>
+  <%- info["id"] %> : [function (require, module, exports) {
+    <%- info["code"] %>
+      }, <%- JSON.stringify(info['mapping']) %>],
+
+        <% }); %>
+
+          })
